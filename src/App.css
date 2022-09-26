@@ -46,7 +46,7 @@
   outline: none;
   width: 270px;
 }
-.map-left button {
+.map-left .calc-btn {
   background: #1b31a8;
   border-radius: 32px;
   border: none;
@@ -153,6 +153,45 @@
   100% {
     transform: rotate(360deg);
   }
+}
+
+.distance-table {
+  border-spacing: 0;
+  border: 1px solid #e9eef2;
+}
+.distance-table td,
+.distance-table th {
+  padding: 8px;
+  border: 1px solid #e9eef2;
+}
+.distance-table th {
+  font-weight: bold;
+  text-align: center;
+  font-size: 16px;
+  line-height: 120%;
+  color: #1e2a32;
+  background-color: #f3f3f3;
+}
+
+.btns {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.two-btn {
+  display: flex;
+  gap: 10px;
+}
+.secondary-btn {
+  background: #ffffff;
+  border-radius: 32px;
+  border: 1px solid #1b31a8;
+  font-size: 16px;
+  line-height: 20px;
+  text-align: center;
+  color: #1b31a8;
+  padding: 20px 32px;
+  cursor: pointer;
 }
 
 /* media query */

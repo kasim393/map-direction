@@ -21,10 +21,31 @@ function App() {
     lng: 78.9629,
   };
   const [directions, setDirections] = useState(null);
-  const [distance, setDistance] = useState("");
-  const [duration, setDuration] = useState("");
+  const [distance, setDistance] = useState([]);
+  const [duration, setDuration] = useState([]);
+  const [startAddress, setStartAddress] = useState([]);
+  const [endAddress, setEndAddress] = useState([]);
   const originRef = useRef("");
   const destinationRef = useRef("");
+  const [formFields, setFormFields] = useState([]);
+  const newDes = useRef([]);
+  console.log(newDes.current);
+
+  const addFields = () => {
+    newDes.current.push({});
+    setFormFields([]);
+  };
+  const removeFields = () => {
+    newDes.current = [];
+    setFormFields([]);
+    setDistance("");
+    setDuration("");
+    setStartAddress("");
+    setEndAddress("");
+    setDirections(null);
+    originRef.current.value = "";
+    destinationRef.current.value = "";
+  };
 
   if (!isLoaded) return <div class="loader"></div>;
 
@@ -35,18 +56,41 @@ function App() {
       });
       return;
     }
+    // add multiple destinations
     const directionsService = new google.maps.DirectionsService();
 
     const results = await directionsService.route({
       origin: originRef.current.value,
       destination: destinationRef.current.value,
       travelMode: google.maps.TravelMode.DRIVING,
+      waypoints: newDes.current.map((item) => {
+        return {
+          location: item.current.value,
+          stopover: true,
+        };
+      }),
       provideRouteAlternatives: true,
     });
 
     setDirections(results);
-    setDistance(results.routes[0].legs[0].distance.text);
-    setDuration(results.routes[0].legs[0].duration.text);
+    const distanceMap = results.routes[0].legs.map((route) => {
+      return route.distance.text;
+    });
+    const durationMap = results.routes[0].legs.map((route) => {
+      return route.duration.text;
+    });
+
+    const startAddress = results.routes[0].legs.map((route) => {
+      return route.start_address.split(",")[0];
+    });
+    const endAddress = results.routes[0].legs.map((route) => {
+      return route.end_address.split(",")[0];
+    });
+
+    setDistance(distanceMap);
+    setDuration(durationMap);
+    setStartAddress(startAddress);
+    setEndAddress(endAddress);
   };
 
   return (
@@ -73,15 +117,42 @@ function App() {
                   <input type="text" ref={destinationRef} />
                 </Autocomplete>
               </div>
+              {newDes.current.map((form, index) => {
+                return (
+                  <div key={index}>
+                    <img src={gps} alt="" />
+                    <p>Destination</p>
+                    <Autocomplete>
+                      <input
+                        type="text"
+                        name="destination"
+                        ref={newDes.current[index]}
+                      />
+                    </Autocomplete>
+                  </div>
+                );
+              })}
             </div>
-            <div>
-              <button onClick={calculateRoute}>Calculate</button>
+            <div className="btns">
+              <div>
+                <button onClick={calculateRoute} className="calc-btn">
+                  Calculate
+                </button>
+              </div>
+              <div className="two-btn">
+                <button onClick={addFields} className="secondary-btn">
+                  Add{" "}
+                </button>
+                <button onClick={removeFields} className="secondary-btn">
+                  reset
+                </button>
+              </div>
             </div>
           </div>
           <div className="distance">
             <div className="distance-top">
               <p>Distance</p>
-              <h1> {distance}</h1>
+              <h1>{distance[0]}</h1>
             </div>
             <div className="distance-bottom">
               {originRef.current.value && destinationRef.current.value && (
@@ -92,13 +163,34 @@ function App() {
                     and <b>
                       {" "}
                       {destinationRef.current.value.split(",")[0]}{" "}
-                    </b> is <b> {distance} </b>
+                    </b> is <b> </b>
                   </p>
 
-                  <p>
-                    {" "}
-                    Duration will be <b> {duration}</b>{" "}
-                  </p>
+                  <p> {/* Duration will be <b> {duration}</b>{" "} */}</p>
+                  <table className="distance-table" border="1px">
+                    <thead>
+                      <tr>
+                        <th>Origin</th>
+                        <th>Destination</th>
+                        <th>Distance</th>
+                        <th>Duration</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {distance.map((item, index) => {
+                        return (
+                          <>
+                            <tr>
+                              <td>{startAddress[index]} </td>
+                              <td>{endAddress[index]}</td>
+                              <td>{item}</td>
+                              <td>{duration[index]}</td>
+                            </tr>
+                          </>
+                        );
+                      })}
+                    </tbody>
+                  </table>
                 </>
               )}
             </div>
