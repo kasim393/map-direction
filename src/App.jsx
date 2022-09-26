@@ -157,14 +157,14 @@ function App() {
             <div className="distance-bottom">
               {originRef.current.value && destinationRef.current.value && (
                 <>
-                  <p>
+                  {/* <p>
                     The distance between{" "}
                     <b> {originRef.current.value.split(",")[0]} </b>
                     and <b>
                       {" "}
                       {destinationRef.current.value.split(",")[0]}{" "}
                     </b> is <b> </b>
-                  </p>
+                  </p> */}
 
                   <p> {/* Duration will be <b> {duration}</b>{" "} */}</p>
                   <table className="distance-table" border="1px">
